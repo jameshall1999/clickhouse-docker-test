@@ -19,5 +19,16 @@ reminder to create data directory in github
 docker exec -it <container id> clickhouse client
 create database test
 use test
-<create and populate table with test data>
+<create table>
+example: 
+CREATE TABLE test.graphite (`Path` String, `Value` Float64, `Time` UInt32, `Date` Date, `Timestamp` UInt32) ENGINE = GraphiteMergeTree('graphite_rollup') PARTITION BY toMonday(Date) ORDER BY (Path, Time) TTL Date + toIntervalMonth(25) SETTINGS index_granularity = 8192
+note: 
+graphite_rollup config is required for this
+<copy existing data>
+ssh to doner server
+clickhouse client -q 'select * from graphite.graphite limit 1000000 format CSV' | gzip > graphite.csv.gz
+scp file to localhost and into the data directory
+enter running container using docker exec to run bash
+import data:
+zcat graphite.csv.gz | clickhouse client -q 'insert into test.graphite format CSV'
 ```
