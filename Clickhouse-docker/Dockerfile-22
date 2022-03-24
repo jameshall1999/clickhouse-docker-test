@@ -111,6 +111,7 @@ ENV TZ UTC
 RUN mkdir /docker-entrypoint-initdb.d
 
 COPY docker_related_config-22.xml /etc/clickhouse-server/config.d/
+COPY graphite_rollup_22.xml /etc/clickhouse-server/config.d/
 COPY entrypoint-22.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
